@@ -1,0 +1,34 @@
+version: "3.8"
+
+services:
+  redpanda:
+    entrypoint:
+    - /usr/bin/rpk
+    - redpanda
+    - start
+    - --smp
+    - '1'
+    - --memory
+    - 256M
+    - --reserve-memory
+    - 0M
+    - --overprovisioned
+    - --node-id
+    - '0'
+    - --kafka-addr
+    - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+    - --advertise-kafka-addr
+    - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
+    image: vectorized/redpanda:latest
+    ports:
+    - 9092:9092
+    - 29092:29092
+
+  demo:
+    image: fernandes/redpanda_action_demo:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - redpanda
+
